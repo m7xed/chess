@@ -1,5 +1,6 @@
 package app.utilities;
 
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
@@ -21,6 +22,17 @@ public class TemplateScene {
 
     // Constructor
     public TemplateScene(Stage stage) {
+        // Layout properties
+        topContainer.setSpacing(10);
+        topContainer.setAlignment(Pos.CENTER);
+
+        centerContainer.setSpacing(10);
+        centerContainer.setAlignment(Pos.CENTER);
+
+        bottomContainer.setSpacing(10);
+        bottomContainer.setAlignment(Pos.CENTER);
+
+        // Assign Layouts
         root.setTop(topContainer);
         root.setCenter(centerContainer);
         root.setBottom(bottomContainer);
@@ -36,4 +48,8 @@ public class TemplateScene {
     public HBox getTopContainer() { return topContainer; }
     public VBox getCenterContainer() { return centerContainer; }
     public HBox getBottomContainer() { return bottomContainer; }
+
+    // Return Scene Dimensions
+    public int getGuiWidth() { return GUI_WIDTH; }
+    public int getGuiHeight() { return GUI_HEIGHT; }
 }

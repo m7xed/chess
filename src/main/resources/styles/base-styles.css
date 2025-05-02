@@ -1,0 +1,71 @@
+/* Modern and elegant styling for the Chess application title screen */
+.root {
+    /* Elegant dark gradient background */
+    -fx-background-color:
+            linear-gradient(
+                    from 0% 0% to 100% 100%,
+                    #3e2f25 0%,
+                    #2c1f16 100%
+            );
+
+    /* Subtle gold border with no top */
+    -fx-border-color: transparent rgba(255, 215, 0, 0.25)  rgba(255, 215, 0, 0.25) rgba(255, 215, 0, 0.25)  ; /* gold on left, bottom, right */
+    -fx-border-width: 3px;
+    -fx-border-radius: 0;
+    -fx-background-radius: 0;
+
+    /* Depth effect */
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.6), 15, 0.3, 0, 4);
+}
+
+
+
+
+.title {
+    -fx-font-family: "DSGabriele"; /* Make sure it's loaded in Java */
+    -fx-font-size: 54px;
+    -fx-text-fill: linear-gradient(to bottom, #ffffff, #dcdcdc); /* Elegant light gradient */
+    -fx-font-weight: bold;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.5), 8, 0.3, 0, 2); /* Soft shadow for depth */
+    -fx-padding: 30px;
+    -fx-alignment: center;
+    -fx-background-color: transparent;
+    -fx-letter-spacing: 1px;
+}
+
+/* Container with gradient background and centered layout */
+.title-container {
+    -fx-alignment: center;
+    -fx-padding: 80px 0;
+    -fx-background-color: linear-gradient(to bottom, #2c2c2c, #1f1f1f); /* Elegant dark gradient */
+    -fx-border-color: #444;
+    -fx-border-width: 0 0 2px 0; /* Optional bottom border for subtle division */
+    -fx-border-style: solid;
+}
+
+.button {
+    -fx-font-family: "Segoe UI", "DSGabriele", sans-serif;
+    -fx-font-size: 16px;
+    -fx-text-fill: #ffffff;
+    -fx-background-color: linear-gradient(to bottom, #3a3a3a, #1e1e1e);
+    -fx-padding: 10px 20px;
+    -fx-background-radius: 8px;
+    -fx-border-radius: 8px;
+    -fx-border-color: #555;
+    -fx-border-width: 1px;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.4), 4, 0.3, 0, 2);
+    -fx-transition: all 0.3s ease;
+}
+
+/* Hover effect */
+.button:hover {
+    -fx-background-color: linear-gradient(to bottom, #4d4d4d, #2a2a2a);
+    -fx-text-fill: #ffd700; /* Soft gold accent on hover */
+}
+
+/* Optional: Pressed state */
+.button:pressed {
+    -fx-background-color: #121212;
+    -fx-effect: innershadow(gaussian, rgba(0, 0, 0, 0.6), 6, 0.5, 0, 1);
+}
