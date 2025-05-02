@@ -2,6 +2,7 @@ package game;
 
 import app.utilities.TemplateScene;
 import app.views.GameScene;
+import game.pieces.Bishop;
 import game.pieces.Pawn;
 import game.pieces.Rook;
 import javafx.scene.image.Image;
@@ -47,6 +48,15 @@ public class ChessBoard {
         // Add black rooks
         board[0][0] = new Rook(false, 0, 0);
         board[0][7] = new Rook(false, 0, 7);
+
+        // Add white bishops
+        board[7][1] = new Bishop(true, 7, 1);
+        board[7][6] = new Bishop(true, 7, 6);
+
+        // Add black bishops
+        board[0][1] = new Bishop(false, 0, 1);
+        board[0][6] = new Bishop(false, 0, 6);
+
 
         boolean white = true;
         for (int row = 0; row < 8; row++) {
