@@ -3,6 +3,7 @@ package game;
 import app.utilities.TemplateScene;
 import app.views.GameScene;
 import game.pieces.Bishop;
+import game.pieces.Knight;
 import game.pieces.Pawn;
 import game.pieces.Rook;
 import javafx.scene.image.Image;
@@ -56,6 +57,14 @@ public class ChessBoard {
         // Add black bishops
         board[0][1] = new Bishop(false, 0, 1);
         board[0][6] = new Bishop(false, 0, 6);
+
+        // Add white knights
+        board[7][2] = new Knight(true, 7, 2);
+        board[7][6] = new Knight(true, 7, 6);
+
+        // Add black Knights
+        board[0][2] = new Knight(false, 0, 2);
+        board[0][6] = new Knight(false, 0, 6);
 
 
         boolean white = true;
