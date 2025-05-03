@@ -2,10 +2,7 @@ package game;
 
 import app.utilities.TemplateScene;
 import app.views.GameScene;
-import game.pieces.Bishop;
-import game.pieces.Knight;
-import game.pieces.Pawn;
-import game.pieces.Rook;
+import game.pieces.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
@@ -50,21 +47,25 @@ public class ChessBoard {
         board[0][0] = new Rook(false, 0, 0);
         board[0][7] = new Rook(false, 0, 7);
 
-        // Add white bishops
-        board[7][1] = new Bishop(true, 7, 1);
-        board[7][6] = new Bishop(true, 7, 6);
-
-        // Add black bishops
-        board[0][1] = new Bishop(false, 0, 1);
-        board[0][6] = new Bishop(false, 0, 6);
-
-        // Add white knights
-        board[7][2] = new Knight(true, 7, 2);
+        // Add white Knights
+        board[7][1] = new Knight(true, 7, 1);
         board[7][6] = new Knight(true, 7, 6);
 
         // Add black Knights
-        board[0][2] = new Knight(false, 0, 2);
-        board[0][6] = new Knight(false, 0, 6);
+        board[0][1] = new Knight(false, 0, 1);
+        board[0][5] = new Knight(false, 0, 6);
+
+        // Add white Bishops
+        board[7][2] = new Bishop(true, 7, 2);
+        board[7][5] = new Bishop(true, 7, 5);
+
+        // Add black Bishops
+        board[0][2] = new Bishop(false, 0, 2);
+        board[0][6] = new Bishop(false, 0, 6);
+
+        // Add Queens
+        board[7][3] = new Queen(true, 7, 3);
+        board[0][5] = new Queen(false, 0, 5);
 
 
         boolean white = true;
