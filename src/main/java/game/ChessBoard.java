@@ -12,26 +12,26 @@ import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 
 public class ChessBoard {
     GridPane grid = new GridPane();
     TemplateScene temp = new TemplateScene(new Stage());
-    private final StackPane root = new StackPane(); // this is now your main wrapper
 
-
-    private ChessPiece[][] board = new ChessPiece[8][8];
+    private List<ChessMove> moveHistory = new ArrayList<>();
+    private final ChessPiece[][] board = new ChessPiece[8][8];
 
     private ChessPiece selectedPiece;
     private int selectedRow = -1;
     private int selectedCol = -1;
 
-    private double cellSize = (double) (temp.getGuiWidth() * 0.8) / 8;
+    private final double CELL_SIZE = (temp.getGuiWidth() * 0.8) / 8;
 
 
     public ChessBoard() {
 
-        // Initialise pieces
+        // Initialise Pawns
         for (int col = 0; col < 8; col++) {
             // Add black pawns
             board[1][col] = new Pawn(false, 1, col);
@@ -53,7 +53,7 @@ public class ChessBoard {
 
         // Add black Knights
         board[0][1] = new Knight(false, 0, 1);
-        board[0][5] = new Knight(false, 0, 6);
+        board[0][6] = new Knight(false, 0, 6);
 
         // Add white Bishops
         board[7][2] = new Bishop(true, 7, 2);
@@ -61,30 +61,33 @@ public class ChessBoard {
 
         // Add black Bishops
         board[0][2] = new Bishop(false, 0, 2);
-        board[0][6] = new Bishop(false, 0, 6);
+        board[0][5] = new Bishop(false, 0, 5);
 
         // Add Queens
         board[7][3] = new Queen(true, 7, 3);
-        board[0][5] = new Queen(false, 0, 5);
+        board[0][3] = new Queen(false, 0, 3);
+
+        // Add Kings
+        board[7][4] = new King(true, 7, 4);
+        board[0][4] = new King(false, 0, 4);
 
 
         boolean white = true;
         for (int row = 0; row < 8; row++) {
             for (int col = 0; col < 8; col++) {
-                Rectangle cell = new Rectangle(cellSize, cellSize);
+                Rectangle cell = new Rectangle(CELL_SIZE, CELL_SIZE);
                 cell.setFill(white ? Color.WHITE : Color.GREY);
 
-                 // Wrap both the cell and the piece (if any) in a StackPane
                 StackPane stack = new StackPane();
-                stack.setPrefSize(cellSize, cellSize);
-                stack.getChildren().add(cell); // add background first
+                stack.setPrefSize(CELL_SIZE, CELL_SIZE);
+                stack.getChildren().add(cell);
 
                 ChessPiece piece = board[row][col];
                 if (piece != null) {
                     ImageView pieceImage = createPieceImage(piece);
-                    pieceImage.setFitWidth(cellSize * 0.8);
-                    pieceImage.setFitHeight(cellSize * 0.8);
-                    stack.getChildren().add(pieceImage); // add piece on top
+                    pieceImage.setFitWidth(CELL_SIZE * 0.8);
+                    pieceImage.setFitHeight(CELL_SIZE * 0.8);
+                    stack.getChildren().add(pieceImage);
                 }
 
                 int finalRow = row;
@@ -100,7 +103,6 @@ public class ChessBoard {
             white = !white;
         }
 
-
         grid.setBorder(new Border(new BorderStroke(
                 Color.GOLD,
                 BorderStrokeStyle.SOLID,
@@ -108,6 +110,7 @@ public class ChessBoard {
                 new BorderWidths(4)
         )));
 
+        StackPane root = new StackPane();
         root.getChildren().add(grid);
     }
 
@@ -122,25 +125,36 @@ public class ChessBoard {
             if (isValidMove) {
                 ChessPiece targetPiece = board[row][col];
                 if (targetPiece == null || targetPiece.isWhite() != selectedPiece.isWhite()) {
-                    board[row][col] = selectedPiece;
-                    board[selectedRow][selectedCol] = null;
+                    // Capture or Move
+                    ChessPiece target = board[row][col];
+                    boolean isCapture = target != null && target.isWhite != selectedPiece.isWhite();
 
-                    int sourceRow = selectedRow;
-                    int sourceCol = selectedCol;
+                    ChessMove move = new ChessMove(
+                            // Selected piece attributes
+                            selectedRow, selectedCol,
+                            // Target square attributes
+                            row, col,
+                            // Piece objects
+                            selectedPiece, targetPiece,
+                            false,false,false,
+                            "", moveHistory.size() + 1
+                            );
 
-                    selectedPiece.move(row, col); // Update internal coords
+                    makeMove(move, row, col);
+
+                    addMove(move);
 
                     selectedPiece = null;
                     selectedRow = -1;
                     selectedCol = -1;
 
-                    updateBoardCell(sourceRow, sourceCol);
+                    updateBoardCell(move.getFromRow(), move.getFromCol());
                     updateBoardCell(row, col);
                     clearHighlight();
-                    GameScene.endTurn();
+                    GameState.swapTurn();
                 }
             } else {
-                // Deselect on invalid move
+                // Space occupied by own piece
                 System.out.println("Invalid move: Piece can't move like that.");
                 clearHighlight();
                 selectedPiece = null;
@@ -150,14 +164,15 @@ public class ChessBoard {
 
             // Case 2: No piece selected yet
         } else {
-            if (piece != null && piece.isWhite()) {
+            if (piece != null && piece.isWhite() == GameState.isWhiteTurn()) {
+
                 selectedPiece = piece;
                 selectedRow = row;
                 selectedCol = col;
                 System.out.println("Piece selected at: " + row + ", " + col);
                 highlightSelectedCell(row, col);
             } else {
-                // Clicked on empty cell — reset selection just in case
+                // Clicked on empty cell - reset selection
                 clearHighlight();
                 selectedPiece = null;
                 selectedRow = -1;
@@ -166,59 +181,110 @@ public class ChessBoard {
         }
     }
 
-
-
     private void clearHighlight() {
         if (selectedRow == -1 || selectedCol == -1) {
-            return;  // Do nothing if no piece is selected
+            return;
         }
-        // Only attempt to clear the highlight if there was a valid selection
         System.out.println("Clearing highlight on cell: " + selectedRow + "," + selectedCol);
-
-        // Get the corresponding StackPane for the selected cell
         StackPane cellStack = (StackPane) grid.getChildren().get(selectedRow * 8 + selectedCol);
-
-        // Ensure that the first child is a Rectangle, which is the background.
         if (!cellStack.getChildren().isEmpty() && cellStack.getChildren().get(0) instanceof Rectangle cell) {
-            // Clear the previous highlight by replacing the background rectangle
             cell.setFill((selectedRow + selectedCol) % 2 == 0 ? Color.WHITE : Color.GREY);
         }
     }
 
-
     private void highlightSelectedCell(int row, int col) {
-        // Get the corresponding StackPane for the cell
         StackPane cellStack = (StackPane) grid.getChildren().get(row * 8 + col);
 
-        // Change the background color to highlight
-        Rectangle cell = new Rectangle(cellSize, cellSize);
-        cell.setFill(Color.YELLOW);  // Highlight color (e.g., yellow)
-        cellStack.getChildren().set(0, cell);  // Update the background color (index 0)
+        Rectangle cell = new Rectangle(CELL_SIZE, CELL_SIZE);
+        cell.setFill(Color.YELLOW);
+        cellStack.getChildren().set(0, cell);
+    }
+
+    private void makeMove(ChessMove move, int row, int col) {
+        ChessPiece piece = board[move.getFromRow()][move.getFromCol()];
+        ChessPiece targetPiece = board[move.getToRow()][move.getToCol()];
+
+        boolean isCapture = targetPiece != null && targetPiece.isWhite() != selectedPiece.isWhite();
+
+        // Castling logic
+        if (selectedPiece instanceof King && Math.abs(col - selectedCol) == 2) {
+            System.out.println("Testing Castling");
+            boolean kingSide = col > selectedCol;
+
+            int rookCol = kingSide ? 7 : 0;
+            ChessPiece rook = board[selectedRow][rookCol];
+
+            if (rook instanceof Rook && rook.isWhite() == selectedPiece.isWhite()) {
+                if (!((King) selectedPiece).hasMoved() && !((Rook) rook).hasMoved()) {
+                    // Check squares between king and rook are empty
+                    boolean pathClear = true;
+                    int step = kingSide ? 1 : -1;
+                    for (int c = selectedCol + step; c != rookCol; c += step) {
+                        if (board[selectedRow][c] != null) {
+                            pathClear = false;
+                            break;
+                        }
+                    }
+
+                    if (pathClear) {
+                        int newRookCol = kingSide ? col - 1 : col + 1;
+
+                        board[selectedRow][newRookCol] = rook;
+                        board[selectedRow][rookCol] = null;
+                        rook.move(selectedRow, newRookCol);
+
+                        board[selectedRow][col] = selectedPiece;
+                        board[selectedRow][selectedCol] = null;
+                        selectedPiece.move(selectedRow, col);
+
+                        updateBoardCell(selectedRow, rookCol);
+                        updateBoardCell(selectedRow, newRookCol);
+                        updateBoardCell(selectedRow, selectedCol);
+                        updateBoardCell(selectedRow, col);
+
+                        selectedPiece = null;
+                        selectedRow = -1;
+                        selectedCol = -1;
+
+                        GameScene.endTurn();
+                        return;
+                    }
+                }
+            }
+        }
+        // Regular move or capture
+        System.out.println("testing regular move");
+        board[row][col] = piece;
+        board[move.getFromRow()][move.getFromCol()] = null;
+        piece.move(row, col);
+
+        updateBoardCell(move.getFromRow(), move.getFromCol());
+        updateBoardCell(row, col);
+
+        selectedPiece = null;
+        selectedRow = -1;
+        selectedCol = -1;
+
+        GameScene.endTurn();
     }
 
     private void updateBoardCell(int row, int col) {
-
         System.out.println("Selected Row: " + selectedRow + " Selected Column: " + selectedCol);
         System.out.println("Target Row: " + row + " Target Column: " + col);
-        // Get the corresponding StackPane for the cell
         StackPane cellStack = (StackPane) grid.getChildren().get(row * 8 + col);
 
-        // Clear the previous piece (if any)
         cellStack.getChildren().clear();
 
-        // Add the background
-        Rectangle cell = new Rectangle(cellSize, cellSize);
+        Rectangle cell = new Rectangle(CELL_SIZE, CELL_SIZE);
         cell.setFill((row + col) % 2 == 0 ? Color.WHITE : Color.GREY);
         cellStack.getChildren().add(cell);
 
-        // If there is a piece, add it to the stack
         ChessPiece piece = board[row][col];
         if (piece != null) {
             ImageView pieceImage = createPieceImage(piece);
-            pieceImage.setFitWidth(cellSize * 0.8);
-            pieceImage.setFitHeight(cellSize * 0.8);
+            pieceImage.setFitWidth(CELL_SIZE * 0.8);
+            pieceImage.setFitHeight(CELL_SIZE * 0.8);
             cellStack.getChildren().add(pieceImage);
-
             }
         }
 
@@ -236,11 +302,19 @@ public class ChessBoard {
         return new ImageView(pieceImage);
     }
 
+    public void addMove(ChessMove move) {
+        moveHistory.add(move);
+    }
+
+    public List<ChessMove> getMoveHistory() {
+        return moveHistory;
+    }
+
     public GridPane getGrid() {
         return grid;
     }
 
-    public double getCellSize() {
-        return cellSize;
+    public double getCELL_SIZE() {
+        return CELL_SIZE;
     }
 }

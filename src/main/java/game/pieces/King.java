@@ -5,31 +5,32 @@ import game.ChessPiece;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Rook extends ChessPiece {
-    private boolean hasMoved = false;
+public class King extends ChessPiece {
+    protected boolean hasMoved = false;
 
-    public Rook(boolean isWhite, int row, int col) {
+    public King(Boolean isWhite, int row, int col) {
         super(isWhite, row, col);
     }
 
     @Override
     public List<int[]> getValidMoves(ChessPiece[][] board) {
-        List<int[]> validMoves = new ArrayList<>();
+        List<int[]> validMoves = new ArrayList<int[]>();
 
-        checkCardinalDirections(board, validMoves);
+        checkOneStepMoves(board, validMoves);
 
         return validMoves;
     }
 
-    public boolean hasMoved() {
-        return hasMoved;
-    }
-
-    private void checkCardinalDirections(ChessPiece[][] board, List<int[]> validMoves) {
+    private void checkOneStepMoves(ChessPiece[][] board, List<int[]> validMoves) {
         checkDirection(board, validMoves, -1, 0);
         checkDirection(board, validMoves, 1, 0);
         checkDirection(board, validMoves, 0, -1);
         checkDirection(board, validMoves, 0, 1);
+
+        checkDirection(board, validMoves, 1, 1);
+        checkDirection(board, validMoves, 1, -1);
+        checkDirection(board, validMoves, -1, -1);
+        checkDirection(board, validMoves, -1, 1);
     }
 
     @Override
@@ -38,4 +39,9 @@ public class Rook extends ChessPiece {
         this.col = newCol;
         hasMoved = true;
     }
+
+    public boolean hasMoved() {
+        return hasMoved;
+    }
 }
+

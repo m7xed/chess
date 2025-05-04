@@ -65,9 +65,9 @@ public class GameScene {
 
         // Wrap board in a StackPane
         StackPane boardWrapper = new StackPane(chessBoard.getGrid());
-        boardWrapper.setPrefSize(chessBoard.getCellSize() * 8, chessBoard.getCellSize() * 8);
-        boardWrapper.setMaxSize(chessBoard.getCellSize() * 8, chessBoard.getCellSize() * 8);
-        boardWrapper.setMinSize(chessBoard.getCellSize() * 8, chessBoard.getCellSize() * 8);
+        boardWrapper.setPrefSize(chessBoard.getCELL_SIZE() * 8, chessBoard.getCELL_SIZE() * 8);
+        boardWrapper.setMaxSize(chessBoard.getCELL_SIZE() * 8, chessBoard.getCELL_SIZE() * 8);
+        boardWrapper.setMinSize(chessBoard.getCELL_SIZE() * 8, chessBoard.getCELL_SIZE() * 8);
 
         // Layout to contain both the board and side panel
         HBox centerLayout = new HBox(20); // Spacing between board and side content

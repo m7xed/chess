@@ -36,7 +36,6 @@ public class TemplateScene {
         root.setTop(topContainer);
         root.setCenter(centerContainer);
         root.setBottom(bottomContainer);
-
     }
 
     // Return Scene
